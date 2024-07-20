@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id()
+  name        String
+  email       String     @unique
+  password    String
+  description String?
+  avatarUrl   String
+  midea       Midea[]
+  comments    Comments[]
+  created_at  DateTime
+  updated_at  DateTime
+  playlists   Playlist[]
+
+  @@map("users")
+}
+
+model Midea {
+  id           String     @id()
+  name         String
+  authors      String?
+  album        String?
+  music_group  String?
+  description  String?
+  genre        String?
+  release_date DateTime?
+  type         String
+  visibility   String
+  time         String
+  cover_url    String?
+  url          String
+  user_id      String
+  user         User       @relation(fields: [user_id], references: [id])
+  comments     Comments[]
+  created_at   DateTime
+  updated_at   DateTime
+  playlists    Playlist[]
+
+  @@map("mideas")
+}
+
+model Playlist {
+  id          String   @id
+  name        String
+  description String?
+  visibility  String
+  created_at  DateTime
+  updated_at  DateTime
+  mideas      Midea[]
+  User        User     @relation(fields: [user_id], references: [id])
+  user_id     String
+
+  @@map("playlists")
+}
+
+model Comments {
+  id         String   @id()
+  message    String
+  midea_id   String
+  midea      Midea    @relation(fields: [midea_id], references: [id])
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  created_at DateTime
+  updated_at DateTime
+
+  @@map("comments")
+}
